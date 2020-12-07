@@ -93,7 +93,7 @@ where
         neighbors.into_iter().for_each(|(neighbor, move_cost)| {
             let new_cost = cost + move_cost;
             let h_cost; // heuristic(&neighbor)
-            let idx;    // index for neighbor
+            let idx; // index for neighbor
             match parents.entry(neighbor) {
                 Vacant(map) => {
                     h_cost = heuristic(map.key());
