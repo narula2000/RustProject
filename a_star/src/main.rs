@@ -1,5 +1,6 @@
 extern crate indexmap;
 extern crate itertools;
+extern crate rayon;
 use indexmap::map::Entry::{Occupied, Vacant};
 use indexmap::IndexMap;
 use num_traits::Zero;
@@ -17,6 +18,7 @@ impl Pos {
         (abs_sub(self.0, other.0) + abs_sub(self.1, other.1)) as u32
     }
 
+    // Return the move and it cost (How knight moves)
     fn moves(&self) -> Vec<(Pos, u32)> {
         let &Pos(x, y) = self;
         vec![
@@ -36,7 +38,7 @@ impl Pos {
 }
 
 fn main() {
-    static GOAL: Pos = Pos(4, 7);
+    static GOAL: Pos = Pos(10, 1);
     let result = astar(
         &Pos(1, 1),
         |p| p.moves(),
@@ -44,10 +46,10 @@ fn main() {
         |p| *p == GOAL,
     );
 
-    println!("Passed: {:?}", result.expect("Passs?"));
+    println!("Passed: {:?}", result.expect(""));
 }
 
-fn astar<N, C, FN, IN, FH, FS>(
+pub fn astar<N, C, FN, IN, FH, FS>(
     start: &N,
     mut get_neighbor: FN,
     mut heuristic: FH,
@@ -61,13 +63,14 @@ where
     FH: FnMut(&N) -> C,
     FS: FnMut(&N) -> bool,
 {
-    // Open Heap: Generate all possible moves for the curent node
+    // Open Heap: Generate all possible moves for the current node
     let mut open = BinaryHeap::new();
     open.push(SmallestCostHolder {
         estimated_cost: heuristic(start),
         cost: Zero::zero(),
         index: 0,
     });
+
     // Closed Heap: Path of the best traversal
     let mut parents: IndexMap<N, (usize, C)> = IndexMap::new();
     parents.insert(start.clone(), (usize::max_value(), Zero::zero()));
@@ -85,8 +88,9 @@ where
             }
             get_neighbor(node)
         };
-        // Go through all the neighbors and map cost
-        for (neighbor, move_cost) in neighbors {
+
+        // Having problem turning into parallel
+        neighbors.into_iter().for_each(|(neighbor, move_cost)| {
             let new_cost = cost + move_cost;
             let h_cost; // heuristic(&neighbor)
             let idx; // index for neighbor
@@ -102,7 +106,7 @@ where
                         idx = map.index();
                         map.insert((index, new_cost));
                     } else {
-                        continue;
+                        return;
                     }
                 }
             }
@@ -111,7 +115,7 @@ where
                 cost: new_cost,
                 index: idx,
             });
-        }
+        });
     }
     None
 }
