@@ -5,7 +5,7 @@ The goal was to implement an A* algorithm which is was parallelize. Initially I 
 ## My Attempt
 I started off by reading majority of paper on A* alogrithm with mixes of the parallel version. I have concluded that I will have to test my sequencial version with the crate version and implement the parallel version and compare to both. I assume that using rayon and it's into_par() function would work but due to theirs two map to keep track with specific type rayon wasn't allowing it. So I tried converting and implement my know ParallelIterator for rayon to use so it would it didn't get that far till I gave up. So I tried using multithread programming which I will lock each map when I remove or add new node to it and release after cost is compute. I tried to implement it but due to lack of time(Very bad time mangement on my part), I wasn't able to accomplish. But I did complete the comparision from the crate pathfinding version and mine
 ## Result
-the data is in a_star/resources/report/report.zip you can unzip it can see how was the data is distributed I did a knight moves on a infinitly expanding chess board where the position to achieve was from 2,2 till 100,100 the result show that my implementation and theirs are close but I have more swing on the higher postion.
+You can unzip the [data](https://github.com/narula2000/RustProject/blob/main/a_star/resources/report/report.zip "Data") as you can see how was the data is distributed I did a knight moves on a infinitly expanding chess board where the position to achieve was from 2,2 till 100,100 the result show that my implementation and theirs are close but I have more swing on the higher postion.
 
 ## Resources
 * https://people.csail.mit.edu/rholladay/docs/parallel_search_report.pdf
