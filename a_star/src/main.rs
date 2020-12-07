@@ -38,7 +38,7 @@ impl Pos {
 }
 
 fn main() {
-    static GOAL: Pos = Pos(2, 1);
+    static GOAL: Pos = Pos(10, 1);
     let result = astar(
         &Pos(1, 1),
         |p| p.moves(),
@@ -49,7 +49,7 @@ fn main() {
     println!("Passed: {:?}", result.expect(""));
 }
 
-fn astar<N, C, FN, IN, FH, FS>(
+pub fn astar<N, C, FN, IN, FH, FS>(
     start: &N,
     mut get_neighbor: FN,
     mut heuristic: FH,
@@ -70,6 +70,7 @@ where
         cost: Zero::zero(),
         index: 0,
     });
+
     // Closed Heap: Path of the best traversal
     let mut parents: IndexMap<N, (usize, C)> = IndexMap::new();
     parents.insert(start.clone(), (usize::max_value(), Zero::zero()));
@@ -87,7 +88,6 @@ where
             }
             get_neighbor(node)
         };
-
 
         // Having problem turning into parallel
         neighbors.into_iter().for_each(|(neighbor, move_cost)| {
