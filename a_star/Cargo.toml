@@ -7,4 +7,5 @@ edition = "2018"
 [dependencies]
 num-traits = "0.2.14"
 indexmap = "1.6.0"
-itertools = "*"
+rayon = "1.5.0"
+itertools = "0.9.0"
