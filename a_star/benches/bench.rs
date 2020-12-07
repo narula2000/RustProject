@@ -1,3 +1,4 @@
+extern crate pathfinding;
 use criterion::*;
 use std::ops::Sub;
 #[path = "../src/main.rs"]
@@ -42,12 +43,22 @@ impl Pos {
 }
 
 pub fn criterion_benchmark(c: &mut Criterion) {
-    let mut group = c.benchmark_group("Implement Astar");
+    let mut group = c.benchmark_group("Astar Seq");
     for i in 2..100 {
         let goal: Pos = Pos(i, i);
-        group.bench_with_input(BenchmarkId::new("Seq", i), &i, |b, _i| {
+        group.bench_with_input(BenchmarkId::new("Mine", i), &i, |b, _i| {
             b.iter(|| {
                 main::astar(
+                    &Pos(1, 1),
+                    |p| p.moves(),
+                    |p| p.distance(&goal) / 3,
+                    |p| *p == goal,
+                )
+            })
+        });
+        group.bench_with_input(BenchmarkId::new("Crate", i), &i, |b, _i| {
+            b.iter(|| {
+                pathfinding::directed::astar::astar(
                     &Pos(1, 1),
                     |p| p.moves(),
                     |p| p.distance(&goal) / 3,
